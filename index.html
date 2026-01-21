@@ -1,1 +1,456 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Workout Log</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+        background: #f5f6fb;
+        color: #202539;
+      }
 
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 40px 20px 60px;
+        background: radial-gradient(circle at top, #ffffff 0%, #f5f6fb 45%, #eef1f9 100%);
+      }
+
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      h1 {
+        font-size: 2.4rem;
+        margin: 0;
+      }
+
+      p.subtitle {
+        margin: 0;
+        color: #5b627a;
+      }
+
+      .grid {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 18px 30px rgba(37, 44, 74, 0.08);
+        border: 1px solid rgba(37, 44, 74, 0.08);
+      }
+
+      .card h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      input,
+      select,
+      textarea {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #d6dbea;
+        font-size: 0.95rem;
+        font-family: inherit;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 90px;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 12px 18px;
+        font-weight: 600;
+        cursor: pointer;
+        background: #3b5cff;
+        color: white;
+        font-size: 0.95rem;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(59, 92, 255, 0.25);
+      }
+
+      .secondary {
+        background: #eef1ff;
+        color: #3b5cff;
+        border: 1px solid #cad2ff;
+      }
+
+      .summary {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .summary-item {
+        flex: 1 1 150px;
+        background: #f7f8ff;
+        padding: 16px;
+        border-radius: 12px;
+      }
+
+      .summary-item span {
+        display: block;
+        font-size: 0.8rem;
+        color: #6a738d;
+      }
+
+      .summary-item strong {
+        font-size: 1.4rem;
+      }
+
+      .log-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .log-entry {
+        border: 1px solid #e2e7f4;
+        border-radius: 14px;
+        padding: 16px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .log-entry header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .pill {
+        background: #eff2ff;
+        color: #3b5cff;
+        border-radius: 999px;
+        padding: 4px 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .entry-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .entry-actions button {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+      }
+
+      .empty-state {
+        text-align: center;
+        color: #6b7280;
+        padding: 40px 20px;
+        border: 1px dashed #cad2ff;
+        border-radius: 16px;
+        background: #f7f8ff;
+      }
+
+      .note {
+        font-size: 0.85rem;
+        color: #5e6785;
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 24px 16px 40px;
+        }
+
+        .entry-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Workout Log</h1>
+        <p class="subtitle">
+          Track your sessions, celebrate your progress, and keep your training history in one place.
+        </p>
+      </header>
+
+      <section class="grid">
+        <div class="card">
+          <h2>New workout</h2>
+          <form id="workout-form">
+            <label>
+              Date
+              <input type="date" id="workout-date" required />
+            </label>
+            <label>
+              Workout type
+              <select id="workout-type" required>
+                <option value="">Select a type</option>
+                <option>Strength</option>
+                <option>Cardio</option>
+                <option>Mobility</option>
+                <option>HIIT</option>
+                <option>Yoga</option>
+                <option>Mixed</option>
+              </select>
+            </label>
+            <label>
+              Duration (minutes)
+              <input type="number" id="workout-duration" min="5" max="300" required />
+            </label>
+            <label>
+              Effort level
+              <select id="workout-effort" required>
+                <option value="">Select effort</option>
+                <option>Easy</option>
+                <option>Moderate</option>
+                <option>Hard</option>
+                <option>All out</option>
+              </select>
+            </label>
+            <label>
+              Highlights & notes
+              <textarea id="workout-notes" placeholder="PRs, mood, recovery notes, or anything to remember."></textarea>
+            </label>
+            <button type="submit">Add workout</button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>Weekly snapshot</h2>
+          <div class="summary" id="summary">
+            <div class="summary-item">
+              <span>Sessions this week</span>
+              <strong id="summary-sessions">0</strong>
+            </div>
+            <div class="summary-item">
+              <span>Total minutes</span>
+              <strong id="summary-minutes">0</strong>
+            </div>
+            <div class="summary-item">
+              <span>Favorite focus</span>
+              <strong id="summary-favorite">—</strong>
+            </div>
+          </div>
+          <p class="note">
+            This snapshot recalculates from your saved log entries and stores everything in this browser.
+          </p>
+          <button type="button" class="secondary" id="clear-log">Clear entire log</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Workout history</h2>
+        <div id="log-list" class="log-list"></div>
+      </section>
+    </div>
+
+    <script>
+      const form = document.getElementById("workout-form");
+      const list = document.getElementById("log-list");
+      const clearButton = document.getElementById("clear-log");
+      const summarySessions = document.getElementById("summary-sessions");
+      const summaryMinutes = document.getElementById("summary-minutes");
+      const summaryFavorite = document.getElementById("summary-favorite");
+      const storageKey = "workout-log-entries";
+
+      const setDefaultDate = () => {
+        const dateInput = document.getElementById("workout-date");
+        const today = new Date();
+        const formatted = today.toISOString().split("T")[0];
+        dateInput.value = formatted;
+      };
+
+      const loadEntries = () => {
+        const raw = localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : [];
+      };
+
+      const saveEntries = (entries) => {
+        localStorage.setItem(storageKey, JSON.stringify(entries));
+      };
+
+      const formatDate = (value) => {
+        const date = new Date(value);
+        return date.toLocaleDateString(undefined, {
+          weekday: "short",
+          month: "short",
+          day: "numeric",
+        });
+      };
+
+      const getWeekRange = () => {
+        const now = new Date();
+        const start = new Date(now);
+        const day = now.getDay();
+        const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+        start.setDate(diff);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        end.setHours(23, 59, 59, 999);
+        return { start, end };
+      };
+
+      const summarize = (entries) => {
+        const { start, end } = getWeekRange();
+        const weekly = entries.filter((entry) => {
+          const date = new Date(entry.date);
+          return date >= start && date <= end;
+        });
+        summarySessions.textContent = weekly.length;
+        summaryMinutes.textContent = weekly.reduce((acc, item) => acc + item.duration, 0);
+
+        const typeCount = weekly.reduce((acc, item) => {
+          acc[item.type] = (acc[item.type] || 0) + 1;
+          return acc;
+        }, {});
+        const favorite = Object.keys(typeCount).sort((a, b) => typeCount[b] - typeCount[a])[0];
+        summaryFavorite.textContent = favorite || "—";
+      };
+
+      const createEntryCard = (entry) => {
+        const card = document.createElement("div");
+        card.className = "log-entry";
+        card.dataset.id = entry.id;
+        card.innerHTML = `
+          <header>
+            <div>
+              <strong>${entry.type}</strong>
+              <div class="note">${formatDate(entry.date)} · ${entry.duration} min · ${entry.effort}</div>
+            </div>
+            <span class="pill">${entry.duration} min</span>
+          </header>
+          <div>${entry.notes ? entry.notes : "No notes yet."}</div>
+          <div class="entry-actions">
+            <button type="button" class="secondary" data-action="edit">Edit</button>
+            <button type="button" data-action="delete">Delete</button>
+          </div>
+        `;
+        return card;
+      };
+
+      const renderEntries = (entries) => {
+        list.innerHTML = "";
+        if (!entries.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty-state";
+          empty.textContent = "No workouts logged yet. Add your first session to get started!";
+          list.appendChild(empty);
+          summarize(entries);
+          return;
+        }
+        const sorted = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+        sorted.forEach((entry) => list.appendChild(createEntryCard(entry)));
+        summarize(entries);
+      };
+
+      const resetForm = () => {
+        form.reset();
+        setDefaultDate();
+      };
+
+      const addEntry = (entry) => {
+        const entries = loadEntries();
+        entries.push(entry);
+        saveEntries(entries);
+        renderEntries(entries);
+      };
+
+      const deleteEntry = (id) => {
+        const entries = loadEntries().filter((entry) => entry.id !== id);
+        saveEntries(entries);
+        renderEntries(entries);
+      };
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const entry = {
+          id: crypto.randomUUID(),
+          date: document.getElementById("workout-date").value,
+          type: document.getElementById("workout-type").value,
+          duration: Number(document.getElementById("workout-duration").value),
+          effort: document.getElementById("workout-effort").value,
+          notes: document.getElementById("workout-notes").value.trim(),
+        };
+        addEntry(entry);
+        resetForm();
+      });
+
+      list.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        const action = button.dataset.action;
+        const card = button.closest(".log-entry");
+        if (!card) return;
+        const id = card.dataset.id;
+        if (action === "delete") {
+          deleteEntry(id);
+          return;
+        }
+        if (action === "edit") {
+          const entries = loadEntries();
+          const entry = entries.find((item) => item.id === id);
+          if (!entry) return;
+          document.getElementById("workout-date").value = entry.date;
+          document.getElementById("workout-type").value = entry.type;
+          document.getElementById("workout-duration").value = entry.duration;
+          document.getElementById("workout-effort").value = entry.effort;
+          document.getElementById("workout-notes").value = entry.notes;
+          deleteEntry(id);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      });
+
+      clearButton.addEventListener("click", () => {
+        if (confirm("Clear your entire workout log? This cannot be undone.")) {
+          saveEntries([]);
+          renderEntries([]);
+        }
+      });
+
+      setDefaultDate();
+      renderEntries(loadEntries());
+    </script>
+  </body>
+</html>
